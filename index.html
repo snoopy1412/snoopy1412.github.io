@@ -116,6 +116,58 @@
       <div class="body-wrap">
         
   
+    <article id="post-ECMA5-getter函数妙用" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/02/19/ECMA5-getter函数妙用/">ECMA5 getter函数妙用</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>最近看前端优化的时候学到一个名词，<strong> Passive event listeners </strong>，具体用在事件监听（addEventListener）的第三个参数，不展开说，有兴趣可以看<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget/addEventListener" target="_blank" rel="external">MDN</a>，表示 listener 永远不会调用 preventDefault()，适用于事件优化。但是由于目前浏览器支持度不够，所以有人做了polyfill。</p>
+</blockquote>
+<h3 id="代码如下"><a href="#代码如下" class="headerlink" title="代码如下"></a>代码如下</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">// Test via a getter in the options object to see </div><div class="line">// if the passive property is accessed</div><div class="line">var supportsPassive = false;</div><div class="line">try &#123;</div><div class="line">  var opts = Object.defineProperty(&#123;&#125;, &apos;passive&apos;, &#123;</div><div class="line">    get: function() &#123;</div><div class="line">      supportsPassive = true;</div><div class="line">    &#125;</div><div class="line">  &#125;);</div><div class="line">  window.addEventListener(&quot;test&quot;, null, opts);</div><div class="line">&#125; catch (e) &#123;&#125;</div><div class="line"></div><div class="line">// Use our detect&apos;s results. </div><div class="line">// passive applied if supported, capture will be false either way.</div><div class="line">elem.addEventListener(</div><div class="line">  &apos;touchstart&apos;,</div><div class="line">  fn,</div><div class="line">  supportsPassive ? &#123; passive: true &#125; : false</div><div class="line">);</div></pre></td></tr></table></figure>
+<p>瞬间感觉厉害了有木有。其实可以实际测试一下，目前chrome浏览器从54版起已经开始支持，看一下<a href="http://caniuse.com/#search=passive" target="_blank" rel="external">caniuse</a>，这里最为突出的便是 <strong> getter </strong> 函数的妙用了。</p>
+<h2 id="为什么上面的代码可以做功能性检测呢"><a href="#为什么上面的代码可以做功能性检测呢" class="headerlink" title="为什么上面的代码可以做功能性检测呢"></a>为什么上面的代码可以做功能性检测呢</h2><p>其实可以在<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">get: function() &#123;</div><div class="line"> //添加一个打印</div><div class="line"> console.log(&apos;进入getter&apos;)</div><div class="line">  supportsPassive = true;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>添加函数后发现，低版本浏览器无法打印出 <em>进入getter</em>；也就是说，getter函数根本就没有触发。说明旧版本的浏览器 addEventListener 里面的第三个函数根本没有passive选项，直接忽略。</p>
+<p>只能说，写这个polyfill的作者确实很有想法。</p>
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      <a href="/2017/02/19/ECMA5-getter函数妙用/" class="archive-article-date">
+  	<time datetime="2017-02-19T12:47:06.000Z" itemprop="datePublished"><i class="icon-clock"></i>2017-02-19</time>
+</a>
+      
+      
+
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+
+
+
+
+
+  
     <article id="post-使用sass预处理器助你提高css编写效率吧！" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-inner">
     
